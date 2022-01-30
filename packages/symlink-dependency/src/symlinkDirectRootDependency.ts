@@ -23,6 +23,7 @@ export default async function symlinkDirectRootDependency (
     linkedPackage: {
       name: string
       version: string
+      resolvedVia?: string
     }
     prefix: string
   }
@@ -50,7 +51,10 @@ export default async function symlinkDirectRootDependency (
   } catch (err: any) { // eslint-disable-line
     if (err.code !== 'ENOENT') throw err
     globalWarn(`Local dependency not found at ${dependencyLocation}`)
-    return
+    if (opts.linkedPackage.resolvedVia !== 'local-filesystem-of-workspace') {
+      return
+    }
+    dependencyRealLocation = dependencyLocation
   }
 
   const dest = path.join(destModulesDirReal, importAs)

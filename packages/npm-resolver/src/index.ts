@@ -264,7 +264,7 @@ function tryResolveFromWorkspacePackages (
   if (!workspacePackages[spec.name]) return null
   const localVersion = pickMatchingLocalVersionOrNull(workspacePackages[spec.name], spec)
   if (!localVersion) return null
-  return resolveFromLocalPackage(workspacePackages[spec.name][localVersion], spec.normalizedPref, opts)
+  return resolveFromLocalPackage(workspacePackages[spec.name][localVersion], spec.normalizedPref, opts, true)
 }
 
 function pickMatchingLocalVersionOrNull (
@@ -299,7 +299,8 @@ function resolveFromLocalPackage (
     hardLinkLocalPackages?: boolean
     projectDir: string
     lockfileDir?: string
-  }
+  },
+  isFromWorkspaceResolver?: boolean
 ) {
   let id!: string
   let directory!: string
@@ -307,8 +308,12 @@ function resolveFromLocalPackage (
     directory = normalize(path.relative(opts.lockfileDir!, localPackage.dir))
     id = `file:${directory}`
   } else {
-    directory = localPackage.dir
-    id = `link:${normalize(path.relative(opts.projectDir, localPackage.dir))}`
+    if (isFromWorkspaceResolver) {
+      directory = path.join(localPackage.dir, localPackage.manifest.publishConfig?.directory ?? '')
+    } else {
+      directory = localPackage.dir
+    }
+    id = `link:${normalize(path.relative(opts.projectDir, directory))}`
   }
   return {
     id,
@@ -318,7 +323,7 @@ function resolveFromLocalPackage (
       directory,
       type: 'directory',
     },
-    resolvedVia: 'local-filesystem',
+    resolvedVia: isFromWorkspaceResolver ? 'local-filesystem-of-workspace' : 'local-filesystem',
   }
 }
 

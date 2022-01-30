@@ -93,6 +93,7 @@ export interface LinkedDependency {
   depPath: string
   dev: boolean
   resolution: DirectoryResolution
+  resolvedVia: string | undefined
   pkgId: string
   version: string
   name: string
@@ -678,6 +679,7 @@ async function resolveDependency (
       optional: wantedDependency.optional,
       pkgId: pkgResponse.body.id,
       resolution: pkgResponse.body.resolution,
+      resolvedVia: pkgResponse.body.resolvedVia,
       version: manifest.version,
     }
   }

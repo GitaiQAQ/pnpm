@@ -32,7 +32,7 @@ export interface ResolveResult {
   manifest?: DependencyManifest
   normalizedPref?: string // is null for npm-hosted dependencies
   resolution: Resolution
-  resolvedVia: 'npm-registry' | 'git-repository' | 'local-filesystem' | 'url' | string
+  resolvedVia: 'npm-registry' | 'git-repository' | 'local-filesystem-of-workspace' | 'local-filesystem' | 'url' | string
 }
 
 export interface WorkspacePackages {
